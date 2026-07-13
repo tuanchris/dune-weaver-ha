@@ -112,12 +112,20 @@ class DuneWeaverClient:
             await self._request("/sand_led", values)
 
     async def run_pattern(self, path: str, clear: str | None = None) -> None:
-        cmd = f"$Sand/Run={path}"
-        if clear:
-            cmd += f" clear={clear}"
-        await self.command(cmd)
+        """Run a .thr pattern. `path` is a /sand_patterns entry (relative to
+        /patterns) or an absolute SD path. With a clear mode, $Sand/Run
+        sequences a clear move first; otherwise $SD/Run (which works even on
+        configs without a playlist: section)."""
+        full = path if path.startswith("/") else f"/patterns/{path}"
+        if clear and clear != "none":
+            await self.command(f"$Sand/Run={full} clear={clear}")
+        else:
+            await self.command(f"$SD/Run={full}")
 
     async def run_playlist(self, name: str) -> None:
+        """Run playlist /playlists/<name>.txt (the .txt suffix is optional)."""
+        if name.lower().endswith(".txt"):
+            name = name[:-4]
         await self.command(f"$Playlist/Run={name}")
 
     async def playlist_stop(self) -> None:

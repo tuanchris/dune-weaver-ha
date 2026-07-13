@@ -24,7 +24,11 @@ no MQTT broker, no Raspberry Pi.
 - **Sensors** — table state, pattern progress (%), current pattern, active
   playlist (with index/total/pause attributes), plus diagnostics
   (last restart reason, uptime, free memory).
-- **Buttons** — Home, Stop, Pause, Resume, Skip pattern.
+- **Playback** — `select` entities to **start a pattern or playlist** from the
+  table's on-card library. The lists are fetched once and cached (they can be
+  large); a **Refresh library** button re-reads them on demand.
+- **Buttons** — Home, Stop, Pause, Resume, Skip pattern, Stop playlist, and
+  Refresh library.
 - **Numbers** — base speed (mm/min) and live speed override (%), both applied
   mid-pattern.
 
@@ -68,7 +72,8 @@ network).
 
 ## Roadmap
 
-- `select` entities for patterns (from the `/sand_patterns` manifest) and
-  playlists, plus `dune_weaver.run_pattern` / `run_playlist` services.
+- `dune_weaver.run_pattern` / `run_playlist` services (for automations that pass
+  an arbitrary path, and a `clear` mode for patterns) — the `select` entities
+  already cover picking from the library.
 - `media_player` entity for a friendlier playback card.
 - Firmware update notifications from the `fw` status field (`update` entity).

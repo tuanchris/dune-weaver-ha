@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.const import EntityCategory
@@ -23,10 +24,64 @@ from .coordinator import DuneWeaverConfigEntry, DuneWeaverCoordinator
 from .entity import DuneWeaverEntity
 
 
+def _strip_txt(name: str) -> str:
+    return name[:-4] if name.lower().endswith(".txt") else name
+
+
+def _current_pattern(data: dict[str, Any]) -> str | None:
+    """The running pattern normalized to a /sand_patterns key (relative to
+    /patterns), or None when nothing is running."""
+    if not data.get("running"):
+        return None
+    file = data.get("file") or ""
+    for prefix in ("/sd/patterns/", "/patterns/", "sd/patterns/", "patterns/"):
+        if file.startswith(prefix):
+            file = file[len(prefix) :]
+            break
+    return file or None
+
+
+def _current_playlist(data: dict[str, Any]) -> str | None:
+    playlist = data.get("playlist") or {}
+    if not playlist.get("active"):
+        return None
+    name = playlist.get("name") or ""
+    return _strip_txt(name) or None
+
+
 @dataclass(frozen=True, kw_only=True)
 class DuneWeaverSelectDescription(SelectEntityDescription):
     setting_key: str  # key in /sand_settings, e.g. "LED/Palette"
     select_fn: Callable[[DuneWeaverCoordinator, str], Awaitable[None]]
+
+
+@dataclass(frozen=True, kw_only=True)
+class DuneWeaverLibrarySelectDescription(SelectEntityDescription):
+    options_key: str  # key in coordinator data holding the option list
+    current_fn: Callable[[dict[str, Any]], str | None]
+    run_fn: Callable[[DuneWeaverCoordinator, str], Awaitable[None]]
+    strip_txt: bool = False
+
+
+# Pattern / playlist pickers — options come from the cached catalogs; selecting
+# one starts it on the table.
+LIBRARY_SELECTS: tuple[DuneWeaverLibrarySelectDescription, ...] = (
+    DuneWeaverLibrarySelectDescription(
+        key="pattern",
+        translation_key="pattern",
+        options_key="patterns",
+        current_fn=_current_pattern,
+        run_fn=lambda coord, opt: coord.async_run_pattern(opt),
+    ),
+    DuneWeaverLibrarySelectDescription(
+        key="playlist",
+        translation_key="playlist",
+        options_key="playlists",
+        current_fn=_current_playlist,
+        run_fn=lambda coord, opt: coord.async_run_playlist(opt),
+        strip_txt=True,
+    ),
+)
 
 
 SELECTS: tuple[DuneWeaverSelectDescription, ...] = (
@@ -79,11 +134,15 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator = entry.runtime_data
-    if "led" not in coordinator.data:
-        return
-    async_add_entities(
-        DuneWeaverSelect(coordinator, description) for description in SELECTS
-    )
+    entities: list[SelectEntity] = [
+        DuneWeaverLibrarySelect(coordinator, description)
+        for description in LIBRARY_SELECTS
+    ]
+    if "led" in coordinator.data:
+        entities += [
+            DuneWeaverSelect(coordinator, description) for description in SELECTS
+        ]
+    async_add_entities(entities)
 
 
 class DuneWeaverSelect(DuneWeaverEntity, SelectEntity):
@@ -108,3 +167,35 @@ class DuneWeaverSelect(DuneWeaverEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         await self.entity_description.select_fn(self.coordinator, option)
+
+
+class DuneWeaverLibrarySelect(DuneWeaverEntity, SelectEntity):
+    """Pattern/playlist picker whose options are the cached table catalog."""
+
+    entity_description: DuneWeaverLibrarySelectDescription
+
+    def __init__(
+        self,
+        coordinator: DuneWeaverCoordinator,
+        description: DuneWeaverLibrarySelectDescription,
+    ) -> None:
+        super().__init__(coordinator)
+        self.entity_description = description
+        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{description.key}"
+
+    @property
+    def options(self) -> list[str]:
+        raw = self.coordinator.data.get(self.entity_description.options_key) or []
+        if self.entity_description.strip_txt:
+            return [_strip_txt(item) for item in raw]
+        return list(raw)
+
+    @property
+    def current_option(self) -> str | None:
+        current = self.entity_description.current_fn(self.coordinator.data)
+        # HA warns if current_option isn't one of the options; only report a
+        # match (the running file may be a subfolder pattern not in the list).
+        return current if current in self.options else None
+
+    async def async_select_option(self, option: str) -> None:
+        await self.entity_description.run_fn(self.coordinator, option)

@@ -42,7 +42,9 @@
       "stop": { "name": "Stop" },
       "pause": { "name": "Pause" },
       "resume": { "name": "Resume" },
-      "skip_pattern": { "name": "Skip pattern" }
+      "skip_pattern": { "name": "Skip pattern" },
+      "stop_playlist": { "name": "Stop playlist" },
+      "refresh_library": { "name": "Refresh library" }
     },
     "number": {
       "speed": { "name": "Speed" },
@@ -54,6 +56,8 @@
       "led_bg_brightness": { "name": "Ball background brightness" }
     },
     "select": {
+      "pattern": { "name": "Pattern" },
+      "playlist": { "name": "Playlist" },
       "led_palette": { "name": "LED palette" },
       "led_direction": {
         "name": "Ball direction",
