@@ -1,0 +1,19 @@
+{
+  "domain": "dune_weaver",
+  "name": "Dune Weaver",
+  "codeowners": ["@tuanchris"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/tuanchris/dune-weaver-ha",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/tuanchris/dune-weaver-ha/issues",
+  "requirements": [],
+  "version": "0.1.0",
+  "zeroconf": [
+    {
+      "type": "_http._tcp.local.",
+      "properties": { "model": "dune-weaver*" }
+    }
+  ]
+}

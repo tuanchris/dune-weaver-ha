@@ -1,0 +1,101 @@
+set_led:
+  name: Set LED
+  description: >-
+    Full control of the table's LED ring — including keys the light entity can't
+    express (secondary color, palette, animation speed, and every 'ball' effect
+    parameter). Any subset of fields may be set; they apply live, even mid-pattern.
+  target:
+    entity:
+      integration: dune_weaver
+      domain: light
+  fields:
+    effect:
+      name: Effect
+      description: Animation effect (e.g. rainbow, fire, ball). Use "off" to turn the ring off.
+      example: fire
+      selector:
+        text:
+    palette:
+      name: Palette
+      description: Palette for the hue-cycling effects (rainbow, fire, plasma, ...).
+      example: ocean
+      selector:
+        select:
+          options:
+            - rainbow
+            - ocean
+            - lava
+            - forest
+            - party
+            - cloud
+            - heat
+            - sunset
+    color:
+      name: Primary color
+      description: Primary color as a hex string (RRGGBB).
+      example: FF8800
+      selector:
+        text:
+    color2:
+      name: Secondary color
+      description: Secondary color (used by gradient/wipe/chase/... and the ball background), hex RRGGBB.
+      example: 0040FF
+      selector:
+        text:
+    brightness:
+      name: Brightness
+      description: Master brightness (0-255).
+      selector:
+        number:
+          min: 0
+          max: 255
+    speed:
+      name: Speed
+      description: Animation speed (1-255).
+      selector:
+        number:
+          min: 1
+          max: 255
+    direction:
+      name: Ball direction
+      description: "'ball' effect ring winding direction."
+      selector:
+        select:
+          options:
+            - cw
+            - ccw
+    align:
+      name: Ball alignment
+      description: "'ball' effect angular offset in degrees (0-359)."
+      selector:
+        number:
+          min: 0
+          max: 359
+          unit_of_measurement: "°"
+    size:
+      name: Ball glow size
+      description: "'ball' effect glow radius in LEDs (1-200)."
+      selector:
+        number:
+          min: 1
+          max: 200
+    fgbright:
+      name: Ball blob brightness
+      description: "'ball' effect blob brightness (0-255)."
+      selector:
+        number:
+          min: 0
+          max: 255
+    bgbright:
+      name: Ball background brightness
+      description: "'ball' effect background brightness (0-255)."
+      selector:
+        number:
+          min: 0
+          max: 255
+    bg:
+      name: Ball background
+      description: "What renders behind the 'ball' blob: static, off, or an effect name."
+      example: plasma
+      selector:
+        text:

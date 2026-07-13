@@ -1,0 +1,136 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Connect to your sand table",
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the table (e.g. 192.168.1.50 or dwmp.local). Prefer the IP if mDNS is unreliable on your network."
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Sand table found",
+        "description": "Add {name} ({host}) to Home Assistant?"
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the table. Check the host and that the table is powered on."
+    },
+    "abort": {
+      "already_configured": "This table is already configured.",
+      "cannot_connect": "Could not reach the discovered table."
+    }
+  },
+  "entity": {
+    "light": {
+      "leds": { "name": "LEDs" }
+    },
+    "sensor": {
+      "table_state": { "name": "State" },
+      "progress": { "name": "Progress" },
+      "current_pattern": { "name": "Pattern" },
+      "playlist": { "name": "Playlist" },
+      "last_reset_reason": { "name": "Last restart reason" },
+      "uptime": { "name": "Uptime" },
+      "free_heap": { "name": "Free memory" }
+    },
+    "button": {
+      "home": { "name": "Home" },
+      "stop": { "name": "Stop" },
+      "pause": { "name": "Pause" },
+      "resume": { "name": "Resume" },
+      "skip_pattern": { "name": "Skip pattern" }
+    },
+    "number": {
+      "speed": { "name": "Speed" },
+      "speed_override": { "name": "Speed override" },
+      "led_speed": { "name": "LED speed" },
+      "led_align": { "name": "Ball alignment" },
+      "led_ball_size": { "name": "Ball glow size" },
+      "led_blob_brightness": { "name": "Ball blob brightness" },
+      "led_bg_brightness": { "name": "Ball background brightness" }
+    },
+    "select": {
+      "led_palette": { "name": "LED palette" },
+      "led_direction": {
+        "name": "Ball direction",
+        "state": {
+          "cw": "Clockwise",
+          "ccw": "Counter-clockwise"
+        }
+      },
+      "led_ball_background": { "name": "Ball background" },
+      "led_run_effect": {
+        "name": "LED effect while running",
+        "state": {
+          "none": "Don't override"
+        }
+      },
+      "led_idle_effect": {
+        "name": "LED effect while idle",
+        "state": {
+          "none": "Don't override"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_led": {
+      "name": "Set LED",
+      "description": "Full control of the table's LED ring, including keys the light entity can't express (secondary color, palette, speed, and every 'ball' parameter). Any subset applies live.",
+      "fields": {
+        "effect": {
+          "name": "Effect",
+          "description": "Animation effect (e.g. rainbow, fire, ball). Use \"off\" to turn the ring off."
+        },
+        "palette": {
+          "name": "Palette",
+          "description": "Palette for the hue-cycling effects (rainbow, fire, plasma, ...)."
+        },
+        "color": {
+          "name": "Primary color",
+          "description": "Primary color as a hex string (RRGGBB)."
+        },
+        "color2": {
+          "name": "Secondary color",
+          "description": "Secondary color (gradient/wipe/chase/... and the ball background), hex RRGGBB."
+        },
+        "brightness": {
+          "name": "Brightness",
+          "description": "Master brightness (0-255)."
+        },
+        "speed": {
+          "name": "Speed",
+          "description": "Animation speed (1-255)."
+        },
+        "direction": {
+          "name": "Ball direction",
+          "description": "'ball' effect ring winding direction."
+        },
+        "align": {
+          "name": "Ball alignment",
+          "description": "'ball' effect angular offset in degrees (0-359)."
+        },
+        "size": {
+          "name": "Ball glow size",
+          "description": "'ball' effect glow radius in LEDs (1-200)."
+        },
+        "fgbright": {
+          "name": "Ball blob brightness",
+          "description": "'ball' effect blob brightness (0-255)."
+        },
+        "bgbright": {
+          "name": "Ball background brightness",
+          "description": "'ball' effect background brightness (0-255)."
+        },
+        "bg": {
+          "name": "Ball background",
+          "description": "What renders behind the 'ball' blob: static, off, or an effect name."
+        }
+      }
+    }
+  }
+}
