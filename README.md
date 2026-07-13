@@ -1,3 +1,5 @@
+<img src="brands/dune_weaver/icon@2x.png" alt="Dune Weaver" width="110" align="right">
+
 # Dune Weaver — Home Assistant integration
 
 Local-polling Home Assistant integration for [Dune Weaver](https://github.com/tuanchris/dune-weaver)
