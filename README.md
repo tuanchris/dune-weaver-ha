@@ -27,6 +27,9 @@ no MQTT broker, no Raspberry Pi.
 - **Playback** — `select` entities to **start a pattern or playlist** from the
   table's on-card library. The lists are fetched once and cached (they can be
   large); a **Refresh library** button re-reads them on demand.
+- **Media player** — a playback card: play/pause/stop/next, the current pattern
+  as the title, playlists as selectable sources, and the pattern library as a
+  browsable folder tree (pick one to run it).
 - **Buttons** — Home, Stop, Pause, Resume, Skip pattern, Stop playlist, and
   Refresh library.
 - **Numbers** — base speed (mm/min) and live speed override (%), both applied
@@ -76,5 +79,4 @@ for passing a path that isn't in the cached list.
 
 ## Roadmap
 
-- `media_player` entity for a friendlier playback card.
 - Firmware update notifications from the `fw` status field (`update` entity).

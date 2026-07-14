@@ -28,6 +28,9 @@
     "light": {
       "leds": { "name": "LEDs" }
     },
+    "media_player": {
+      "player": { "name": "Player" }
+    },
     "sensor": {
       "table_state": { "name": "State" },
       "progress": { "name": "Progress" },
