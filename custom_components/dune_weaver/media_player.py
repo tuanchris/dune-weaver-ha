@@ -47,11 +47,9 @@ async def async_setup_entry(
 
 class DuneWeaverMediaPlayer(DuneWeaverEntity, MediaPlayerEntity):
     _attr_translation_key = "player"
-    # Firmware actions are fire-and-forget (confirmed only on the next poll), so
-    # the state is momentarily assumed after a command. Marking it assumed also
-    # makes HA render explicit play / pause / stop buttons (the frontend only
-    # shows a stop control for assumed-state players) instead of a single toggle.
-    _attr_assumed_state = True
+    # NB: not assumed_state — that would render separate play/pause/stop buttons.
+    # We keep the single state-dependent play/pause toggle; STOP is still
+    # supported (more-info dialog / a dashboard button calling media_stop).
     _attr_supported_features = (
         MediaPlayerEntityFeature.PLAY
         | MediaPlayerEntityFeature.PAUSE
