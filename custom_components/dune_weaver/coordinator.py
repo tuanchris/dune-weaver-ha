@@ -17,6 +17,24 @@ _LOGGER = logging.getLogger(__name__)
 
 type DuneWeaverConfigEntry = ConfigEntry[DuneWeaverCoordinator]
 
+# /sand_led live keys -> the /sand_settings key they persist to. Used to fold a
+# write into the cached settings optimistically, so an LED change doesn't cost a
+# GET /sand_settings on top of the write (the ESP32 serves HTTP serially).
+_LED_LIVE_TO_SETTING = {
+    "effect": "LED/Effect",
+    "palette": "LED/Palette",
+    "color": "LED/Color",
+    "color2": "LED/Color2",
+    "brightness": "LED/Brightness",
+    "speed": "LED/Speed",
+    "direction": "LED/Direction",
+    "align": "LED/Align",
+    "size": "LED/BallSize",
+    "fgbright": "LED/BallBright",
+    "bgbright": "LED/BallBgBright",
+    "bg": "LED/BallBg",
+}
+
 
 class DuneWeaverCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Polls GET /sand_status — the poll rate the firmware was designed for."""
@@ -97,20 +115,31 @@ class DuneWeaverCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         await self.async_request_refresh()
 
     async def async_write_led(self, **values: Any) -> None:
-        """Apply live LED values (/sand_led), then reload settings + status so
-        the color/palette/ball entities reflect the change."""
+        """Apply live LED values (/sand_led) and fold them into the cached
+        settings optimistically — /sand_status only echoes effect+brightness, so
+        the cache is the source for color/palette/ball state. Entities clamp to
+        the firmware's ranges before this, so the cache matches what's stored;
+        this avoids a GET /sand_settings on every change (important during a
+        color-wheel or slider drag)."""
         await self.client.set_led(**values)
-        await self._refresh_settings()
+        for key, val in values.items():
+            if (setting := _LED_LIVE_TO_SETTING.get(key)) is not None:
+                self._settings[setting] = (
+                    str(val).upper() if key in ("color", "color2") else str(val)
+                )
         await self.async_request_refresh()
 
     async def async_set_led_hook(self, hook: str, effect: str) -> None:
         """Set a machine-state effect override ($LED/RunEffect|IdleEffect)."""
         await self.client.command(f"$LED/{hook}={effect}")
-        await self._refresh_settings()
+        self._settings[f"LED/{hook}"] = effect
         await self.async_request_refresh()
 
     async def async_refresh_library(self) -> None:
-        """Re-read the pattern + playlist catalogs on demand (Refresh button)."""
+        """Re-sync the cached catalogs and settings from the table (Refresh
+        button). Also picks up LED/feed settings changed elsewhere (mobile app,
+        table UI) that optimistic writes alone wouldn't surface."""
+        await self._refresh_settings()
         await self._refresh_library()
         self._library_loaded = True
         await self.async_request_refresh()
