@@ -12,7 +12,6 @@ from .coordinator import DuneWeaverConfigEntry, DuneWeaverCoordinator
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.LIGHT,
-    Platform.MEDIA_PLAYER,
     Platform.NUMBER,
     Platform.SELECT,
     Platform.SENSOR,

@@ -24,14 +24,36 @@ class DuneWeaverButtonDescription(ButtonEntityDescription):
     press_fn: Callable[[DuneWeaverCoordinator], Awaitable[None]]
 
 
-# Pause/Resume/Stop/Skip live on the media_player (play/pause/stop/next), so
-# they're not duplicated as buttons. Home isn't a media action, and Refresh
-# library is a utility.
 BUTTONS: tuple[DuneWeaverButtonDescription, ...] = (
     DuneWeaverButtonDescription(
         key="home",
         translation_key="home",
         press_fn=lambda coord: coord.client.home(),
+    ),
+    DuneWeaverButtonDescription(
+        key="stop",
+        translation_key="stop",
+        press_fn=lambda coord: coord.client.stop(),
+    ),
+    DuneWeaverButtonDescription(
+        key="pause",
+        translation_key="pause",
+        press_fn=lambda coord: coord.client.pause(),
+    ),
+    DuneWeaverButtonDescription(
+        key="resume",
+        translation_key="resume",
+        press_fn=lambda coord: coord.client.resume(),
+    ),
+    DuneWeaverButtonDescription(
+        key="skip",
+        translation_key="skip_pattern",
+        press_fn=lambda coord: coord.client.playlist_skip(),
+    ),
+    DuneWeaverButtonDescription(
+        key="stop_playlist",
+        translation_key="stop_playlist",
+        press_fn=lambda coord: coord.async_stop_playlist(),
     ),
     DuneWeaverButtonDescription(
         key="refresh_library",

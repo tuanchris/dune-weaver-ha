@@ -169,3 +169,7 @@ class DuneWeaverCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def async_run_playlist(self, name: str) -> None:
         await self.client.run_playlist(name)
         await self.async_request_refresh()
+
+    async def async_stop_playlist(self) -> None:
+        await self.client.playlist_stop()
+        await self.async_request_refresh()

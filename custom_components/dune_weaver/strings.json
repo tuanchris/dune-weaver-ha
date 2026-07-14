@@ -28,9 +28,6 @@
     "light": {
       "leds": { "name": "LEDs" }
     },
-    "media_player": {
-      "player": { "name": "Player" }
-    },
     "sensor": {
       "table_state": { "name": "State" },
       "progress": { "name": "Progress" },
@@ -42,6 +39,11 @@
     },
     "button": {
       "home": { "name": "Home" },
+      "stop": { "name": "Stop" },
+      "pause": { "name": "Pause" },
+      "resume": { "name": "Resume" },
+      "skip_pattern": { "name": "Skip pattern" },
+      "stop_playlist": { "name": "Stop playlist" },
       "refresh_library": { "name": "Refresh library" }
     },
     "number": {
