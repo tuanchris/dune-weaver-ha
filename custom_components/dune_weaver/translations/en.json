@@ -58,6 +58,9 @@
       "led_blob_brightness": { "name": "Ball blob brightness" },
       "led_bg_brightness": { "name": "Ball background brightness" }
     },
+    "update": {
+      "firmware": { "name": "Firmware" }
+    },
     "select": {
       "pattern": { "name": "Pattern" },
       "playlist": { "name": "Playlist" },

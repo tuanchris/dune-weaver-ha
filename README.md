@@ -34,6 +34,10 @@ no MQTT broker, no Raspberry Pi.
   Refresh library.
 - **Numbers** — base speed (mm/min) and live speed override (%), both applied
   mid-pattern.
+- **Update** — an `update` entity that surfaces the firmware version (`fw`) and
+  notifies when a newer release is available (checked against the firmware
+  repo's GitHub releases every 6 h). Notification only, with release notes and a
+  link — flash from the mobile app or the table's web UI.
 
 State is polled from `GET /sand_status` every 5 s — a background cadence that
 keeps the integration's footprint small on the table's single-client,
@@ -84,7 +88,3 @@ network).
 Automations can also start playback with the `dune_weaver.run_pattern`
 (path + optional `clear` mode) and `dune_weaver.run_playlist` services — handy
 for passing a path that isn't in the cached list.
-
-## Roadmap
-
-- Firmware update notifications from the `fw` status field (`update` entity).
