@@ -1,4 +1,4 @@
-<img src="brands/dune_weaver/icon@2x.png" alt="Dune Weaver" width="110" align="right">
+<img src="custom_components/dune_weaver/brand/icon@2x.png" alt="Dune Weaver" width="110" align="right">
 
 # Dune Weaver — Home Assistant integration
 
