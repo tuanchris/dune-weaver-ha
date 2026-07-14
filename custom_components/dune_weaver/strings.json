@@ -42,16 +42,10 @@
     },
     "button": {
       "home": { "name": "Home" },
-      "stop": { "name": "Stop" },
-      "pause": { "name": "Pause" },
-      "resume": { "name": "Resume" },
-      "skip_pattern": { "name": "Skip pattern" },
-      "stop_playlist": { "name": "Stop playlist" },
       "refresh_library": { "name": "Refresh library" }
     },
     "number": {
       "speed": { "name": "Speed" },
-      "speed_override": { "name": "Speed override" },
       "led_speed": { "name": "LED speed" },
       "led_align": { "name": "Ball alignment" },
       "led_ball_size": { "name": "Ball glow size" },

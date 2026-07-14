@@ -15,7 +15,7 @@ from homeassistant.components.number import (
     NumberEntityDescription,
     NumberMode,
 )
-from homeassistant.const import PERCENTAGE, EntityCategory
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -55,17 +55,6 @@ FEED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
         mode=NumberMode.BOX,
         value_fn=lambda d: d.get("feed"),
         set_fn=lambda coord, value: coord.async_set_feed(mm=int(value)),
-    ),
-    DuneWeaverNumberDescription(
-        key="feed_override",
-        translation_key="speed_override",
-        native_min_value=10,
-        native_max_value=200,
-        native_step=5,
-        native_unit_of_measurement=PERCENTAGE,
-        mode=NumberMode.SLIDER,
-        value_fn=lambda d: d.get("feed_override"),
-        set_fn=lambda coord, value: coord.async_set_feed(pct=int(value)),
     ),
 )
 
