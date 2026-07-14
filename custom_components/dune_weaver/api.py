@@ -32,6 +32,13 @@ class DuneWeaverResponseError(DuneWeaverError):
         self.status = status
 
 
+class DuneWeaverBusyError(DuneWeaverResponseError):
+    """The table shed this request under memory pressure (503 'busy: low
+    memory'). Transient — back off and retry. /sand_status and the
+    stop/pause/resume actions are exempt from the firmware's low-heap guard, so
+    the heartbeat and safety controls keep working."""
+
+
 class DuneWeaverClient:
     """Client for one table. Holds no connection state (plain HTTP)."""
 
@@ -39,17 +46,29 @@ class DuneWeaverClient:
         self.host = host
         self.base_url = f"http://{host}:{port}"
         self._session = session
+        # The ESP32 web server handles ONE client at a time and is heap-tight.
+        # Serialize every request so HA never has two connections (two lwIP
+        # PCBs + socket buffers) alive against the board at once — e.g. a status
+        # poll racing a slider drag's writes.
+        self._lock = asyncio.Lock()
 
     async def _request(self, path: str, params: dict[str, Any] | None = None) -> str:
         url = f"{self.base_url}{path}"
+        # Don't pool the connection: the board force-closes after every response
+        # (Connection: close), so a pooled socket is already dead; closing our
+        # side too avoids a doomed reuse attempt and keeps zero idle sockets.
+        headers = {"Connection": "close"}
         try:
-            async with asyncio.timeout(REQUEST_TIMEOUT):
-                resp = await self._session.get(url, params=params)
+            async with self._lock, asyncio.timeout(REQUEST_TIMEOUT):
+                resp = await self._session.get(url, params=params, headers=headers)
                 body = await resp.text()
         except (TimeoutError, ClientError) as err:
             raise DuneWeaverConnectionError(f"Cannot reach {url}: {err}") from err
         if resp.status >= 400:
-            raise DuneWeaverResponseError(resp.status, body.strip()[:200])
+            detail = body.strip()[:200]
+            if resp.status == 503 and "low memory" in detail.lower():
+                raise DuneWeaverBusyError(resp.status, detail)
+            raise DuneWeaverResponseError(resp.status, detail)
         return body
 
     async def _request_json(self, path: str, params: dict[str, Any] | None = None) -> Any:

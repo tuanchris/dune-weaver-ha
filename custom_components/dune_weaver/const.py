@@ -5,7 +5,18 @@ from __future__ import annotations
 DOMAIN = "dune_weaver"
 
 DEFAULT_PORT = 80
-UPDATE_INTERVAL_SECONDS = 2
+# Base poll cadence. The app is the realtime driver (1 Hz); HA is a background
+# monitor, so it polls slower to keep its footprint on the single-client,
+# heap-constrained ESP32 web server small.
+UPDATE_INTERVAL_SECONDS = 5
+# When the board reports heap pressure, HA backs its poll right off and defers
+# its heavy reads so it stops competing for the last few KB of heap (the app's
+# launch burst + /sand_patterns already runs the board near the 10 KB
+# load-shedding floor).
+LOW_HEAP_INTERVAL_SECONDS = 30
+# heap_largest floor below which the board is "stressed" (CLAUDE.md: WARN <20k,
+# alert <12k). Above this, HA polls at the base cadence and loads its catalogs.
+HEAP_LARGEST_WARN = 20000
 
 # Effect names accepted by the firmware ($LED/Effect / /sand_led?effect=).
 LED_EFFECTS = [

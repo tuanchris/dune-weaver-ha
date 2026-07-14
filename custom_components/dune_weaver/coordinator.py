@@ -11,7 +11,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import DuneWeaverClient, DuneWeaverError
-from .const import DOMAIN, UPDATE_INTERVAL_SECONDS
+from .const import (
+    DOMAIN,
+    HEAP_LARGEST_WARN,
+    LOW_HEAP_INTERVAL_SECONDS,
+    UPDATE_INTERVAL_SECONDS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,11 +77,24 @@ class DuneWeaverCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             status = await self.client.get_status()
         except DuneWeaverError as err:
+            # /sand_status is exempt from the firmware's low-heap 503 guard, so a
+            # failure here is a real connectivity problem, not back-pressure.
             raise UpdateFailed(str(err)) from err
-        if not self._settings_loaded:
-            await self._refresh_settings()
-        if not self._library_loaded:
-            self._library_loaded = await self._refresh_library()
+        # Be a good citizen on a single-client, heap-tight board: when it reports
+        # heap pressure (e.g. the app's launch burst + /sand_patterns is running),
+        # slow the poll right down and defer HA's own heavy reads so we stop
+        # competing for the last few KB and don't trip the 10 KB load-shedding
+        # floor. heap_largest is absent on very old firmware -> treat as healthy.
+        largest = status.get("heap_largest")
+        heap_ok = not isinstance(largest, (int, float)) or largest >= HEAP_LARGEST_WARN
+        self.update_interval = timedelta(
+            seconds=UPDATE_INTERVAL_SECONDS if heap_ok else LOW_HEAP_INTERVAL_SECONDS
+        )
+        if heap_ok:
+            if not self._settings_loaded:
+                await self._refresh_settings()
+            if not self._library_loaded:
+                self._library_loaded = await self._refresh_library()
         status["settings"] = self._settings
         status["patterns"] = self._patterns
         status["playlists"] = self._playlists

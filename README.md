@@ -35,11 +35,19 @@ no MQTT broker, no Raspberry Pi.
 - **Numbers** — base speed (mm/min) and live speed override (%), both applied
   mid-pattern.
 
-State is polled from `GET /sand_status` every 2 s — the rate the firmware's
-multi-client status route is designed for. The slower-changing LED/feed
-settings (`GET /sand_settings`, the source for the palette/color/speed/ball
-values that `/sand_status` doesn't report) are fetched once at startup and
-re-read after each write, not on every poll.
+State is polled from `GET /sand_status` every 5 s — a background cadence that
+keeps the integration's footprint small on the table's single-client,
+heap-constrained web server (the mobile app is the realtime driver). All
+requests are serialized, so the integration never holds more than one connection
+to the board at a time. When `/sand_status` reports heap pressure
+(`heap_largest` under 20 KB — e.g. while the app's launch burst and its
+`/sand_patterns` read are running), the poll backs off to 30 s and the
+integration defers its own catalog/settings reads, so it stops competing for the
+last few KB of heap and can't push the board into its low-memory load-shedding.
+The slower-changing LED/feed settings (`GET /sand_settings`, the source for the
+palette/color/speed/ball values that `/sand_status` doesn't report) and the
+pattern/playlist catalogs are fetched once when heap is healthy and re-read after
+each write or via the refresh button, not on every poll.
 
 ## Requirements
 
