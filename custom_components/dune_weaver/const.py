@@ -74,3 +74,6 @@ LED_BALL_BG_OPTIONS = ["static", "off"] + [
 # Machine-state effect override for $LED/RunEffect and $LED/IdleEffect:
 # "none" leaves the manual effect in place, otherwise any effect name.
 LED_HOOK_OPTIONS = ["none"] + LED_EFFECTS
+
+# Clear-before-run modes accepted by $Sand/Run (run_pattern service).
+CLEAR_MODES = ["none", "adaptive", "in", "out", "sideway", "random"]

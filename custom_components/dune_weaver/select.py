@@ -9,12 +9,15 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
 
+import voluptuous as vol
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
+    CLEAR_MODES,
     LED_BALL_BG_OPTIONS,
     LED_DIRECTIONS,
     LED_HOOK_OPTIONS,
@@ -22,6 +25,9 @@ from .const import (
 )
 from .coordinator import DuneWeaverConfigEntry, DuneWeaverCoordinator
 from .entity import DuneWeaverEntity
+
+SERVICE_RUN_PATTERN = "run_pattern"
+SERVICE_RUN_PLAYLIST = "run_playlist"
 
 
 def _strip_txt(name: str) -> str:
@@ -134,6 +140,20 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator = entry.runtime_data
+    platform = entity_platform.async_get_current_platform()
+    platform.async_register_entity_service(
+        SERVICE_RUN_PATTERN,
+        {
+            vol.Required("pattern"): cv.string,
+            vol.Optional("clear", default="none"): vol.In(CLEAR_MODES),
+        },
+        "async_run_pattern_service",
+    )
+    platform.async_register_entity_service(
+        SERVICE_RUN_PLAYLIST,
+        {vol.Required("playlist"): cv.string},
+        "async_run_playlist_service",
+    )
     entities: list[SelectEntity] = [
         DuneWeaverLibrarySelect(coordinator, description)
         for description in LIBRARY_SELECTS
@@ -145,7 +165,22 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class DuneWeaverSelect(DuneWeaverEntity, SelectEntity):
+class _RunServiceMixin:
+    """Adds the run_pattern / run_playlist services to any Dune Weaver select,
+    so either the pattern or playlist picker is a valid target."""
+
+    coordinator: DuneWeaverCoordinator
+
+    async def async_run_pattern_service(
+        self, pattern: str, clear: str = "none"
+    ) -> None:
+        await self.coordinator.async_run_pattern(pattern, clear)
+
+    async def async_run_playlist_service(self, playlist: str) -> None:
+        await self.coordinator.async_run_playlist(playlist)
+
+
+class DuneWeaverSelect(_RunServiceMixin, DuneWeaverEntity, SelectEntity):
     entity_description: DuneWeaverSelectDescription
 
     def __init__(
@@ -169,7 +204,7 @@ class DuneWeaverSelect(DuneWeaverEntity, SelectEntity):
         await self.entity_description.select_fn(self.coordinator, option)
 
 
-class DuneWeaverLibrarySelect(DuneWeaverEntity, SelectEntity):
+class DuneWeaverLibrarySelect(_RunServiceMixin, DuneWeaverEntity, SelectEntity):
     """Pattern/playlist picker whose options are the cached table catalog."""
 
     entity_description: DuneWeaverLibrarySelectDescription

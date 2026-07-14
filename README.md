@@ -70,10 +70,11 @@ To add one manually: **Add integration → Dune Weaver** and enter the table's I
 address (prefer the IP over `<host>.local` if mDNS is unreliable on your
 network).
 
+Automations can also start playback with the `dune_weaver.run_pattern`
+(path + optional `clear` mode) and `dune_weaver.run_playlist` services — handy
+for passing a path that isn't in the cached list.
+
 ## Roadmap
 
-- `dune_weaver.run_pattern` / `run_playlist` services (for automations that pass
-  an arbitrary path, and a `clear` mode for patterns) — the `select` entities
-  already cover picking from the library.
 - `media_player` entity for a friendlier playback card.
 - Firmware update notifications from the `fw` status field (`update` entity).

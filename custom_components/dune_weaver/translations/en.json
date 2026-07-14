@@ -82,6 +82,30 @@
     }
   },
   "services": {
+    "run_pattern": {
+      "name": "Run pattern",
+      "description": "Start a .thr pattern on the table, optionally clearing the sand first.",
+      "fields": {
+        "pattern": {
+          "name": "Pattern",
+          "description": "Pattern path — a /sand_patterns entry (relative to /patterns) or an absolute SD path."
+        },
+        "clear": {
+          "name": "Clear",
+          "description": "Clear the sand before running (a clear move is sequenced first)."
+        }
+      }
+    },
+    "run_playlist": {
+      "name": "Run playlist",
+      "description": "Start a playlist on the table.",
+      "fields": {
+        "playlist": {
+          "name": "Playlist",
+          "description": "Playlist name (the .txt suffix is optional)."
+        }
+      }
+    },
     "set_led": {
       "name": "Set LED",
       "description": "Full control of the table's LED ring, including keys the light entity can't express (secondary color, palette, speed, and every 'ball' parameter). Any subset applies live.",

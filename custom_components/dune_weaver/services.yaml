@@ -1,3 +1,51 @@
+run_pattern:
+  name: Run pattern
+  description: >-
+    Start a .thr pattern on the table. Accepts a path from the pattern list
+    (relative to /patterns, e.g. "spiral.thr" or "custom/x.thr") or an absolute
+    SD path. Optionally clear the sand first.
+  target:
+    entity:
+      integration: dune_weaver
+      domain: select
+  fields:
+    pattern:
+      name: Pattern
+      description: Pattern path — a /sand_patterns entry or an absolute SD path.
+      required: true
+      example: custom_patterns/spiral.thr
+      selector:
+        text:
+    clear:
+      name: Clear
+      description: Clear the sand before running (a clear move is sequenced first).
+      default: none
+      selector:
+        select:
+          options:
+            - none
+            - adaptive
+            - in
+            - out
+            - sideway
+            - random
+
+run_playlist:
+  name: Run playlist
+  description: Start a playlist on the table.
+  target:
+    entity:
+      integration: dune_weaver
+      domain: select
+  fields:
+    playlist:
+      name: Playlist
+      description: Playlist name (the .txt suffix is optional).
+      required: true
+      example: evening
+      selector:
+        text:
+
 set_led:
   name: Set LED
   description: >-
