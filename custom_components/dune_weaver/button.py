@@ -51,11 +51,6 @@ BUTTONS: tuple[DuneWeaverButtonDescription, ...] = (
         press_fn=lambda coord: coord.client.playlist_skip(),
     ),
     DuneWeaverButtonDescription(
-        key="stop_playlist",
-        translation_key="stop_playlist",
-        press_fn=lambda coord: coord.async_stop_playlist(),
-    ),
-    DuneWeaverButtonDescription(
         key="refresh_library",
         translation_key="refresh_library",
         entity_category=EntityCategory.CONFIG,

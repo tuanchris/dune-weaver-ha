@@ -27,8 +27,8 @@ no MQTT broker, no Raspberry Pi.
 - **Playback** — `select` entities to **start a pattern or playlist** from the
   table's on-card library. The lists are fetched once and cached (they can be
   large); a **Refresh library** button re-reads them on demand.
-- **Buttons** — Home, Stop, Pause, Resume, Skip pattern, Stop playlist, and
-  Refresh library.
+- **Buttons** — Home, Stop (halts the current pattern and any active playlist),
+  Pause, Resume, Skip pattern, and Refresh library.
 - **Numbers** — base speed (mm/min), applied mid-pattern, plus the LED
   animation/ball parameters.
 - **Update** — an `update` entity that surfaces the firmware version (`fw`) and

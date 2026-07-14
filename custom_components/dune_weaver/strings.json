@@ -43,7 +43,6 @@
       "pause": { "name": "Pause" },
       "resume": { "name": "Resume" },
       "skip_pattern": { "name": "Skip pattern" },
-      "stop_playlist": { "name": "Stop playlist" },
       "refresh_library": { "name": "Refresh library" }
     },
     "number": {
