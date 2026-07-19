@@ -11,7 +11,6 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -94,7 +93,6 @@ SELECTS: tuple[DuneWeaverSelectDescription, ...] = (
     DuneWeaverSelectDescription(
         key="led_palette",
         translation_key="led_palette",
-        entity_category=EntityCategory.CONFIG,
         options=LED_PALETTES,
         setting_key="LED/Palette",
         select_fn=lambda coord, opt: coord.async_write_led(palette=opt),
@@ -102,7 +100,6 @@ SELECTS: tuple[DuneWeaverSelectDescription, ...] = (
     DuneWeaverSelectDescription(
         key="led_direction",
         translation_key="led_direction",
-        entity_category=EntityCategory.CONFIG,
         options=LED_DIRECTIONS,
         setting_key="LED/Direction",
         select_fn=lambda coord, opt: coord.async_write_led(direction=opt),
@@ -110,7 +107,6 @@ SELECTS: tuple[DuneWeaverSelectDescription, ...] = (
     DuneWeaverSelectDescription(
         key="led_ball_background",
         translation_key="led_ball_background",
-        entity_category=EntityCategory.CONFIG,
         options=LED_BALL_BG_OPTIONS,
         setting_key="LED/BallBg",
         select_fn=lambda coord, opt: coord.async_write_led(bg=opt),
@@ -118,7 +114,6 @@ SELECTS: tuple[DuneWeaverSelectDescription, ...] = (
     DuneWeaverSelectDescription(
         key="led_run_effect",
         translation_key="led_run_effect",
-        entity_category=EntityCategory.CONFIG,
         options=LED_HOOK_OPTIONS,
         setting_key="LED/RunEffect",
         select_fn=lambda coord, opt: coord.async_set_led_hook("RunEffect", opt),
@@ -126,7 +121,6 @@ SELECTS: tuple[DuneWeaverSelectDescription, ...] = (
     DuneWeaverSelectDescription(
         key="led_idle_effect",
         translation_key="led_idle_effect",
-        entity_category=EntityCategory.CONFIG,
         options=LED_HOOK_OPTIONS,
         setting_key="LED/IdleEffect",
         select_fn=lambda coord, opt: coord.async_set_led_hook("IdleEffect", opt),

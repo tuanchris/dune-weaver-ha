@@ -15,7 +15,6 @@ from homeassistant.components.number import (
     NumberEntityDescription,
     NumberMode,
 )
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -58,13 +57,12 @@ FEED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
     ),
 )
 
-# LED knobs — only added when the table has LEDs. Kept under the Configuration
-# category since most only matter for specific effects (speed) or 'ball'.
+# LED knobs — only added when the table has LEDs. Grouped with the LED light in
+# the main Controls section (not Configuration) so all LED controls sit together.
 LED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
     DuneWeaverNumberDescription(
         key="led_speed",
         translation_key="led_speed",
-        entity_category=EntityCategory.CONFIG,
         native_min_value=1,
         native_max_value=255,
         native_step=1,
@@ -75,7 +73,6 @@ LED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
     DuneWeaverNumberDescription(
         key="led_align",
         translation_key="led_align",
-        entity_category=EntityCategory.CONFIG,
         native_min_value=0,
         native_max_value=359,
         native_step=1,
@@ -87,7 +84,6 @@ LED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
     DuneWeaverNumberDescription(
         key="led_ball_size",
         translation_key="led_ball_size",
-        entity_category=EntityCategory.CONFIG,
         native_min_value=1,
         native_max_value=200,
         native_step=1,
@@ -98,7 +94,6 @@ LED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
     DuneWeaverNumberDescription(
         key="led_blob_brightness",
         translation_key="led_blob_brightness",
-        entity_category=EntityCategory.CONFIG,
         native_min_value=0,
         native_max_value=255,
         native_step=1,
@@ -109,7 +104,6 @@ LED_NUMBERS: tuple[DuneWeaverNumberDescription, ...] = (
     DuneWeaverNumberDescription(
         key="led_bg_brightness",
         translation_key="led_bg_brightness",
-        entity_category=EntityCategory.CONFIG,
         native_min_value=0,
         native_max_value=255,
         native_step=1,
