@@ -14,6 +14,16 @@
       "zeroconf_confirm": {
         "title": "Sand table found",
         "description": "Add {name} ({host}) to Home Assistant?"
+      },
+      "reconfigure": {
+        "title": "Change the table's address",
+        "description": "Enter the new address for {name}. Its entities, history and automations are kept.",
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the table (e.g. 192.168.1.50 or dwmp.local). Prefer the IP if mDNS is unreliable on your network."
+        }
       }
     },
     "error": {
@@ -21,7 +31,11 @@
     },
     "abort": {
       "already_configured": "This table is already configured.",
-      "cannot_connect": "Could not reach the discovered table."
+      "address_updated": "This table is already configured; its address has been updated to the one you entered.",
+      "cannot_connect": "Could not reach the discovered table.",
+      "reconfigure_successful": "The table's address was updated.",
+      "unknown_device": "That device is not a configured Dune Weaver table.",
+      "wrong_table": "That address belongs to a different sand table. To add it, use Add integration instead."
     }
   },
   "entity": {

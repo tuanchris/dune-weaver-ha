@@ -10,7 +10,9 @@ no MQTT broker, no Raspberry Pi.
 ## Features
 
 - **Auto-discovery** — tables advertise `model=dune-weaver` over mDNS and show up
-  in Home Assistant automatically (manual IP entry as fallback).
+  in Home Assistant automatically (manual IP entry as fallback). Tables are keyed
+  by MAC, so a table that changes IP is followed automatically — see
+  [When a table changes IP address](#when-a-table-changes-ip-address).
 - **Light** — the table's LED ring as a proper HA light: on/off, brightness,
   RGB color (read back from the table), and all firmware effects. Uses the
   firmware's live LED path, so it works while a pattern is drawing.
@@ -59,8 +61,9 @@ each write or via the refresh button, not on every poll.
 - Firmware newer than v0.1.7 exposes the table's MAC address (in `/sand_status`
   and the mDNS TXT record); the integration uses it as the stable device ID, so
   a table added by IP and the same table found via discovery can't create
-  duplicates, and DHCP address changes are followed automatically. Older
-  firmware still works, just without that dedupe.
+  duplicates, and address changes are followed automatically. Older firmware
+  still works, just without that dedupe — and an entry added against older
+  firmware adopts the MAC on its first reload after the table is updated.
 
 ## Installation
 
@@ -81,6 +84,29 @@ Discovered tables appear under **Settings → Devices & services** — just conf
 To add one manually: **Add integration → Dune Weaver** and enter the table's IP
 address (prefer the IP over `<host>.local` if mDNS is unreliable on your
 network).
+
+### When a table changes IP address
+
+The entry stores the address you set up, but the table's identity is its MAC, so
+a new DHCP lease doesn't strand it. In order of what normally gets there first:
+
+1. **mDNS** — the table re-announces its new address, Home Assistant re-fires
+   discovery and the entry's host is updated (and reloaded) in place.
+2. **DHCP** — the lease itself. The integration registers a `registered_devices`
+   DHCP matcher, so Home Assistant's `dhcp` integration (part of
+   `default_config`) matches the table's MAC against the device registry and
+   updates the entry, even on networks where mDNS never reaches HA. Nothing is
+   ever *added* over DHCP — a DHCP packet says nothing about whether the device
+   speaks the sand-table API.
+3. **Reconfigure** — for a move neither of those can see (a different subnet, a
+   static IP change): **Settings → Devices & services → Dune Weaver →** the
+   entry's three-dot menu **→ Reconfigure**, then enter the new address. Adding
+   the integration again with the new IP does the same thing.
+
+All of these update the existing entry, so entity IDs, history and automations
+survive the move. The reconfigure step refuses an address that answers with a
+*different* table's MAC, so an entry can't be silently re-pointed at another
+table.
 
 Automations can also start playback with the `dune_weaver.run_pattern`
 (path + optional `clear` mode) and `dune_weaver.run_playlist` services — handy
